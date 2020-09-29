@@ -1,0 +1,353 @@
+﻿{% load static %}
+
+
+<!doctype html>
+<html lang="en">
+    {% block content %}
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="RealEstate, Admin, Dashboard, template, UI kit, RealEstate Admin, Bootstrap 4x">
+    <meta name="author" content="Thememakker">
+    <title>:: RealEstate :: 매물 상세</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"> <!-- Favicon-->
+<!--
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.min.css' %}">
+-->
+    <!-- Custom Css -->
+		<!--
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/color_skins.css' %}">
+	-->
+</head>
+
+
+
+<body >
+
+
+
+    <!-- Main Content -->
+    <section class="content">
+
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-4">
+                <div id="floor_info"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="blog_info"></div>
+            </div>
+            <div class="col-lg-4">
+                <div id="land_info"></div>
+            </div>
+        </div>
+
+
+
+    </section>
+    
+    
+    
+    
+    
+    
+  <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <!-- Jquery Core Js -->
+    <script src="{% static 'bundles/libscripts.bundle.js' %}"></script>
+    <script src="{% static 'bundles/vendorscripts.bundle.js' %}"></script>
+
+    <script src="{% static 'bundles/mainscripts.bundle.js' %}"></script>
+    
+
+
+<script src="{% static 'plugins/bootstrap-notify/bootstrap-notify.js' %}"></script>  <!-- Bootstrap Notify Plugin Js -->
+<script src="{% static 'js/pages/ui/notifications.js' %}"></script> <!-- Custom Js -->
+
+
+<script>
+
+$(document).ready(function() {
+            
+getfloor();
+getTitleInfo();
+getLandInfo();
+            
+console.log('{{property.admin_memo}}');
+
+  
+        
+        }); 
+	
+        
+        
+function getfloor() {
+            console.log("층 정보  rf 호출 하기");
+
+				//var sigunguCd = {{ property.location.admcd}} ;// areaCd.substring( 0, 5 )};
+				//console.log(sigunguCd);
+				//console.log(typeof(sigunguCd));
+				//sigunguCd = String(sigunguCd).substr(0,5) ; //substring(0,5) ; 
+				//console.log(sigunguCd);
+				//var bjdongCd = {{ property.location.admcd}}
+				//bjdongCd = String(bjdongCd).substr( 5, 10 );
+
+
+				//            console.log(bjdongCd);
+				//var bun = "0000"+ {{  property.location.lnbrmnnm }};
+				//var ji = "0000" +{{  property.location.lnbrslno }};
+				//bun = bun.substring(bun.length-4, bun.length);
+				//ji = ji.substring(ji.length-4, ji.length);
+				//console.log(bun);
+				//console.log(ji);
+            $.ajax({ // 
+                type: "POST", 
+                url: "/rfapi/getFloor/",
+                data: {
+                        "sigunguCd": '11680',//sigunguCd, // 11290   13300
+                        "bjdongCd" :  '10300' ,  //bjdongCd, //
+                        "bun": '0012', //bun, //
+                        "ji": '0000', //ji, //
+						'csrfmiddlewaretoken': '{{ csrf_token }}'
+                }, // 서버로 데이터 전송시 옵션
+
+                dataType: "json", // 서버측에서 전송한 데이터를 어떤 형식의 데이터로서 해석할 것인가를 지정, 없으면 알아서 판단
+                // 서버측에서 전송한 Response 데이터 형식 (json)
+
+                success: function (response) { // 통신 성공시
+                    console.log('getfloor 성공입니다');
+                    console.log(response);
+
+                    data_list = response.list;
+                    var htmlStr = "";
+//                    if (data_list == 'none') {
+//                htmlStr += " 없습니다"
+//                // document.getElementById("msg").value = htmlStr;
+//
+//            }
+//                    else {
+//                htmlStr += "<table class='table table-hover'><thead><th scope='col'> id</th> <th scope='col'> 거래유형 </th><th scope='col'> 가격정보</th></thead><tbody>";
+                    console.log(data_list);
+
+                    
+                    
+
+                    var i = 0;
+                    if (response.result == 'fail') {
+                            htmlStr += "건물 층별 정보 가 없습니다."
+                        }
+                    else {
+                        //a_list= data_list.sort;
+						a_list= data_list;
+                        //     a_list= data_list.sort(function compare(first, second) {
+                          //     return first.rnum -second.rnum ;
+                            //   });
+
+        //                     console.log(data_list[0].dongNm);
+        //                    a_list= a_list.sort(function compare (first, second) {
+        //                       return first.flrGbCd -second.flrGbCd ;
+        //                    });  
+        //                    a_list= a_list.sort(function compare(first, second) {
+        //                       return first.dongNm -second.dongNm ;
+        //                   });
+        //                    
+//htmlStr += "<table id='mytable' class='table td_2 table-striped table-hover js-basic-example dataTable'><thead><th 
+                        
+                        htmlStr += "<table id='mytable' border=1><thead><th scope='col'>rnum</th><th scope='col'>동</th><th scope='col'> 층(면적) </th><th scope='col'> 주 용도 </th></thead><tbody><tr>";
+                        i = 0;
+
+                        $(a_list).each(function () {
+                           // console.log(data_list[i]);
+                            /*comment comment_form*/
+                            if (i == 0) {
+                            htmlStr += "<td>"+ this.rnum +"</td><td>"+ this.dongNm +"</td><td id='td10' value='" + i + "' onClick='fillText(this.id)'>" + this.flrNoNm + "<br/>(" + this.area+ "㎡)" +
+                            "</td><td>"+ this.mainPurpsCdNm+"</td></tr>";
+                            }
+                            else {
+                            htmlStr += "<td>"+ this.rnum +"</td><td>"+ this.dongNm +"</td><td id='td1" + i + "'  value='" + i + "' onClick='fillText(this.id)'>" + this.flrNoNm+ "<br/>(" + this.area + "㎡)" +
+                            "</td><td>"+ this.mainPurpsCdNm+"</td></tr>";
+                            }
+                            i++;
+                        });
+
+                        htmlStr += "</tbody><table>";
+                        }
+
+                        i = 0;
+                        $("#floor_info").html(htmlStr);
+                    
+               //i = 0;
+
+                //console.log(data_list);
+
+                
+                },
+
+                error: function (request, status, error) { // 통신 실패시 - 로그인 페이지 리다이렉트
+                    alert("문제 발생: 층 정보")
+                    alert(request);
+                    console.log(status);
+         
+                },
+            });
+        }
+
+function getTitleInfo() {
+    $.ajax({ //
+        type: "POST",
+        url: "/rfapi/getTitle-info/",
+        data: {
+            "sigunguCd": "11680",
+            "bjdongCd": "10300",
+            "bun": "0012",
+            "ji": "0000",
+            "numOfRows": "20",
+            "csrfmiddlewaretoken": "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function (response) { // 통신 성공시
+            console.log('성공입디다');
+            console.log(response);
+            data_list = response.response.body.items.item
+            var htmlStr = "";
+            htmlStr +=
+                "<table id='mytable' border=1>" +
+                "<thead><th scope='col'>rnum</th>" +
+                "<th scope='col'>대지위치</th>" +
+                "<th scope='col'> 관리건축대물장 PK </th>" +
+                "<th scope='col'> 대장종류코드명 </th>" +
+                "<th scope='col'> 건물명 </th>" +
+                "<th scope='col'> 새주소본번 </th>" +
+                "<th scope='col'> 새주소부번 </th>" +
+                "<th scope='col'> 동명칭 </th>" +
+                "<th scope='col'> 주부속구분코드명 </th>" +
+                "<th scope='col'> 대지면적(㎡) </th>" +
+                "<th scope='col'> 건축면적(㎡) </th>" +
+                "<th scope='col'> 건폐율(%) </th>" +
+                "<th scope='col'> 연면적(㎡) </th>" +
+                "<th scope='col'> 용적률산정연면적(㎡) </th>" +
+                "<th scope='col'> 용적률(%) </th>" +
+                "<th scope='col'> 구조코드명 </th>" +
+                "<th scope='col'> 주용도코드명 </th>" +
+                "<th scope='col'> 세대수(세대) </th>" +
+                "<th scope='col'> 높이(m) </th>" +
+                "<th scope='col'> 지상층수 </th>" +
+                "<th scope='col'> 지하층수 </th>" +
+                "<th scope='col'> 승용승강기수 </th>" +
+                "<th scope='col'> 비상용승강기수 </th>" +
+                "<th scope='col'> 총동연면적(㎡) </th>" +
+                "<th scope='col'> 옥내기계식대수(대) </th>" +
+                "<th scope='col'> 옥외기계식대수(대) </th>" +
+                "<th scope='col'> 옥내자주식대수(대) </th>" +
+                "<th scope='col'> 옥외자주식대수(대) </th>" +
+                "<th scope='col'> 사용승인일 </th>" +
+                "<th scope='col'> 생성일자 </th>" +
+                "</thead><tbody><tr>";
+
+            $(data_list).each(function () {
+                htmlStr += "<td>" + this.rnum + "</td>" +
+                    "<td>" + this.platPlc + "</td>" +
+                    "<td>" + this.mgmBldrgstPk + "</td>" +
+                    "<td>" + this.regstrKindCdNm + "</td>" +
+                    "<td>" + this.bldNm + "</td>" +
+                    "<td>" + this.naMainBun + "</td>" +
+                    "<td>" + this.naSubBun + "</td>" +
+                    "<td>" + this.dongNm + "</td>" +
+                    "<td>" + this.mainAtchGbCdNm + "</td>" +
+                    "<td>" + this.platArea + "</td>" +
+                    "<td>" + this.archArea + "</td>" +
+                    "<td>" + this.bcRat + "</td>" +
+                    "<td>" + this.totArea + "</td>" +
+                    "<td>" + this.vlRatEstmTotArea + "</td>" +
+                    "<td>" + this.vlRat + "</td>" +
+                    "<td>" + this.strctCdNm + "</td>" +
+                    "<td>" + this.mainPurpsCdNm + "</td>" +
+                    "<td>" + this.hhldCnt + "</td>" +
+                    "<td>" + this.heit + "</td>" +
+                    "<td>" + this.grndFlrCnt + "</td>" +
+                    "<td>" + this.ugrndFlrCnt + "</td>" +
+                    "<td>" + this.rideUseElvtCnt + "</td>" +
+                    "<td>" + this.emgenUseElvtCnt + "</td>" +
+                    "<td>" + this.totDongTotArea + "</td>" +
+                    "<td>" + this.indrMechUtcnt + "</td>" +
+                    "<td>" + this.oudrMechUtcnt + "</td>" +
+                    "<td>" + this.indrAutoUtcnt + "</td>" +
+                    "<td>" + this.oudrAutoUtcnt + "</td>" +
+                    "<td>" + this.useAprDay + "</td>" +
+                    "<td>" + this.crtnDay + "</td>" +
+                    "</tr>";
+            });
+            htmlStr += "</tbody></table>";
+            $("#blog_info").html(htmlStr);
+        },
+
+        error: function (request, status, error) { // 통신 실패시 - 로그인 페이지 리다이렉트
+            alert("문제 발생: 건축 층 정보");
+            alert(request);
+            console.log(status);
+        }
+
+    });
+}
+
+function getLandInfo(){
+    $.ajax({ //
+        type: "POST",
+        url: "/rfapi/getLand-info/",
+        data: {
+            "typeName" : "F251",
+            "bbox" : "217970,447107,218515,447524,EPSG:5174",
+            "pnu" : "414501170010186",
+            "maxFeatures" : "10",
+            "srsName" : "EPSG:5174",
+            "resultType" : "results",
+            "csrfmiddlewaretoken": "{{ csrf_token }}"
+        },
+        dataType: "json",
+        success: function (response) { // 통신 성공시
+            console.log('성공입디다');
+            console.log(response);
+            data_list = response.response.fields.field
+            var htmlStr = "";
+            htmlStr +=
+                "<table id='mytable' border=1>" +
+                "<thead><th scope='col'> 공시지가 </th>" +
+                "<th scope='col'> 지목명 </th>" +
+                "<th scope='col'> 토지면적 </th>" +
+                "<th scope='col'> 용도지역명1 </th>" +
+                "<th scope='col'> 용도지역명2 </th>" +
+                "<th scope='col'> 토지이용상황명 </th>" +
+                "<th scope='col'> 지형높이 </th>" +
+                "<th scope='col'> 지형형상 </th>" +
+                "<th scope='col'> 도로접면 </th>" +
+                "</thead><tbody><tr>";
+
+            $(data_list).each(function () {
+                htmlStr += "<td>" + this.pblntfPclnd + "</td>" +
+                    "<td>" + this.lndcgrCodeNm + "</td>" +
+                    "<td>" + this.lndpclAr + "</td>" +
+                    "<td>" + this.prposArea1Nm + "</td>" +
+                    "<td>" + this.prposArea2Nm + "</td>" +
+                    "<td>" + this.ladUseSittnNm + "</td>" +
+                    "<td>" + this.tpgrphHgCodeNm + "</td>" +
+                    "<td>" + this.tpgrphFrmCodeNm + "</td>" +
+                    "<td>" + this.roadSideCodeNm + "</td>" +
+                    "</tr>";
+            });
+            htmlStr += "</tbody></table>";
+            $("#land_info").html(htmlStr);
+        },
+        error: function (request, status, error) { // 통신 실패시 - 로그인 페이지 리다이렉트
+            alert("문제 발생: 토지 정보");
+            alert(request);
+            console.log(status);
+        }
+    })
+}
+</script>
+</body>
+{% endblock %}
+</html>
+
